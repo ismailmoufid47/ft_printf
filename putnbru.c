@@ -1,48 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   putnbr.c                                           :+:      :+:    :+:   */
+/*   putnbru.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: isel-mou <isel-mou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/31 21:46:09 by isel-mou          #+#    #+#             */
-/*   Updated: 2024/11/30 12:46:45 by isel-mou         ###   ########.fr       */
+/*   Created: 2024/11/29 21:54:34 by isel-mou          #+#    #+#             */
+/*   Updated: 2024/11/30 12:42:02 by isel-mou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	write_padding(int len, t_flags flags, char pad_char)
-{
-	int	written;
-
-	written = 0;
-	while (flags.width > len)
-	{
-		written += write(1, &pad_char, 1);
-		flags.width--;
-	}
-	return (written);
-}
-
-static int	write_sign_and_prefix(long *n, t_flags flags)
-{
-	int	written;
-
-	written = 0;
-	if (flags.space && !flags.plus && *n >= 0)
-		written += write(1, " ", 1);
-	if (flags.plus && *n >= 0)
-		written += write(1, "+", 1);
-	if (*n < 0)
-	{
-		written += write(1, "-", 1);
-		*n = -*n;
-	}
-	return (written);
-}
-
-static int	write_number(long n)
+static int	write_number(unsigned int n)
 {
 	int	written;
 
@@ -53,13 +23,13 @@ static int	write_number(long n)
 	return (written);
 }
 
-static int	calculate_length(long n, t_flags flags)
+static int	calculate_length(unsigned int n, t_flags flags)
 {
 	int	len;
 
 	len = ft_nbrlen(n, 0, 0);
-	if (flags.precision && flags.precision_value > len - (n < 0))
-		len = flags.precision_value + (n < 0);
+	if (flags.precision && flags.precision_value > len)
+		len = flags.precision_value;
 	if (flags.precision && n == 0 && flags.precision_value == 0)
 		len = 0;
 	if ((flags.space || flags.plus) && n >= 0)
@@ -67,7 +37,7 @@ static int	calculate_length(long n, t_flags flags)
 	return (len);
 }
 
-int	ft_putnbr(long n, t_flags flags)
+int	ft_putnbru(unsigned int n, t_flags flags)
 {
 	int		len;
 	int		written;
@@ -80,7 +50,10 @@ int	ft_putnbr(long n, t_flags flags)
 		padding_char = '0';
 	if (!flags.minus && !flags.zero)
 		written += write_padding(len, flags, ' ');
-	written += write_sign_and_prefix(&n, flags);
+	if (flags.space && !flags.plus && n >= 0)
+		written += write(1, " ", 1);
+	if (flags.plus && n >= 0)
+		written += write(1, "+", 1);
 	if (!flags.minus && flags.zero)
 		written += write_padding(len, flags, '0');
 	flags.precision_value += !n;

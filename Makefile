@@ -2,8 +2,9 @@ NAME = libftprintf.a
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
-OBJ = ft_printf.o putchar.o putstr.o putnbr.o
-$(NAME): $(OBJ)
+OBJ = ft_printf.o putstr.o putnbr.o puthex.o putptr.o putnbru.o
+
+$(NAME): $(OBJ) ft_printf.h
 	ar rc $(NAME) $(OBJ)
 
 all: $(NAME)

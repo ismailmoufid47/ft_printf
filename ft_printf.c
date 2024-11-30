@@ -6,11 +6,23 @@
 /*   By: isel-mou <isel-mou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/23 16:19:22 by isel-mou          #+#    #+#             */
-/*   Updated: 2024/11/29 15:37:48 by isel-mou         ###   ########.fr       */
+/*   Updated: 2024/11/30 12:49:33 by isel-mou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
+
+t_flags	parse_precision(char **format, t_flags flags)
+{
+	if (**format == '.')
+	{
+		(*format)++;
+		flags.precision = 1;
+		flags.zero = 0;
+		flags.precision_value = ft_atoi(format);
+	}
+	return (flags);
+}
 
 int	ft_atoi(char **format)
 {
@@ -46,13 +58,7 @@ t_flags	parse_flags( char **format)
 		(*format)++;
 	}
 	flags.width = ft_atoi(format);
-	if (**format == '.')
-	{
-		(*format)++;
-		flags.precision = 1;
-		flags.zero = 0;
-		flags.precision_value = ft_atoi(format);
-	}
+	flags = parse_precision(format, flags);
 	return (flags);
 }
 
@@ -76,7 +82,7 @@ void	check_format(char **format, va_list args, int *written)
 	else if (**format == 'd' || **format == 'i')
 		*written += ft_putnbr(va_arg(args, int), flags);
 	else if (**format == 'u')
-		*written += ft_putnbru(va_arg(args, int), flags);
+		*written += ft_putnbru(va_arg(args, unsigned int), flags);
 	else if (**format == 'x')
 		*written += ft_puthex(va_arg(args, unsigned int), 0, flags);
 	else if (**format == 'X')
@@ -90,8 +96,8 @@ int	ft_printf(const char *format, ...)
 	va_list	args;
 	int		written;
 
-	va_start(args, format);
 	written = 0;
+	va_start(args, format);
 	while (*format)
 	{
 		if (*format == '%')
